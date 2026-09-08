@@ -323,7 +323,7 @@
         const key = event.key;
 
         if (
-            (key === "ArrowLeft"  key === "a"  key === "A") &&
+            (key === "ArrowLeft" || key === "a" || key === "A") &&
             dx !== 10
         ) {
             dx = -10;
@@ -332,7 +332,7 @@
         }
 
         else if (
-            (key === "ArrowUp"  key === "w"  key === "W") &&
+            (key === "ArrowUp" || key === "w" || key === "W") &&
             dy !== 10
         ) {
             dx = 0;
@@ -341,7 +341,7 @@
         }
 
         else if (
-            (key === "ArrowRight"  key === "d"  key === "D") &&
+            (key === "ArrowRight" || key === "d" || key === "D") &&
             dx !== -10
         ) {
             dx = 10;
@@ -349,7 +349,7 @@
             changingDirection = true;
         }
         else if (
-            (key === "ArrowDown"  key === "s"  key === "S") &&
+            (key === "ArrowDown" || key === "s" || key === "S") &&
             dy !== -10
         ) {
             dx = 0;
