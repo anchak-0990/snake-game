@@ -1,12 +1,8 @@
-<!DOCTYPE html>
-
-<html lang="uk"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>SNAKE</title>
-    
-<style>
-    * {
-        box-sizing: border-box;
-    }
-
+<!DOCTYPE html><html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SNAKE</title><style>
     body {
         background: #020202;
         color: #00ff41;
@@ -28,7 +24,7 @@
         letter-spacing: 2px;
     }
 
-    h1 {
+    #title {
         margin: 0 0 8px;
         font-size: 30px;
         text-shadow: 0 0 10px #00ff41;
@@ -39,19 +35,14 @@
         text-shadow: 0 0 10px #00ff41;
     }
 
-    .game-wrapper {
-        position: relative;
-        width: min(400px, 90vw);
-        aspect-ratio: 1 / 1;
-    }
-
     canvas {
         display: block;
-        width: 100%;
-        height: 100%;
         border: 2px solid #00ff41;
         box-shadow: 0 0 30px rgba(0, 255, 65, 0.2);
         background: #000;
+        width: min(400px, 90vw);
+        height: min(400px, 90vw);
+        touch-action: none;
     }
 
     .cipher-text {
@@ -70,82 +61,55 @@
         text-shadow: 2px 2px #00ff41;
     }
 
-    /* Кнопки керування */
+    /* На комп'ютері кнопки НЕ показуємо */
     .controls {
         display: none;
-        margin-top: 15px;
-        width: 180px;
-        height: 130px;
-        position: relative;
     }
 
-    .control-btn {
-        position: absolute;
-        width: 55px;
-        height: 55px;
-        background: #020202;
-        color: #00ff41;
-        border: 2px solid #00ff41;
-        font-size: 25px;
-        font-family: monospace;
-        box-shadow: 0 0 10px rgba(0, 255, 65, 0.2);
-        touch-action: manipulation;
-    }
-
-    .control-btn:active {
-        background: #00ff41;
-        color: #000;
-    }
-
-    #up {
-        top: 0;
-        left: 62px;
-    }
-
-    #left {
-        top: 62px;
-        left: 0;
-    }
-
-    #down {
-        top: 62px;
-        left: 62px;
-    }
-
-    #right {
-        top: 62px;
-        left: 124px;
-    }
-
-    /* Екранні кнопки тільки на сенсорних пристроях */
+    /* На телефоні/сенсорному пристрої показуємо */
     @media (hover: none) and (pointer: coarse) {
         .controls {
-            display: block;
-        }
-    }
-
-    @media (max-height: 650px) {
-        .ui {
-            margin-bottom: 5px;
+            display: grid;
+            grid-template-columns: 55px 55px 55px;
+            grid-template-rows: 55px 55px;
+            gap: 5px;
+            margin-top: 12px;
         }
 
-        h1 {
+        .control-btn {
+            width: 55px;
+            height: 55px;
+            background: #020202;
+            color: #00ff41;
+            border: 2px solid #00ff41;
             font-size: 24px;
+            font-family: monospace;
+            touch-action: manipulation;
         }
 
-        #score {
-            font-size: 16px;
+        .control-btn:active {
+            background: #00ff41;
+            color: #000;
         }
 
-        .cipher-text {
-            margin-top: 5px;
-            height: 25px;
+        #up {
+            grid-column: 2;
+            grid-row: 1;
         }
 
-        .controls {
-            margin-top: 5px;
-            transform: scale(0.8);
-            transform-origin: top center;
+        #left {
+            grid-column: 1;
+            grid-row: 2;
+        }
+
+        #down {
+            grid-column: 2;
+            grid-row: 2;
+        }
+
+        #right {
+            grid-column: 3;
+            grid-row: 2;
         }
     }
 </style>
@@ -155,9 +119,7 @@
     <div id="score">DATA_RECOVERED: 0%</div>
 </div>
 
-<div class="game-wrapper">
-    <canvas id="gameCanvas" width="400" height="400"></canvas>
-</div>
+<canvas id="gameCanvas" width="400" height="400"></canvas>
 
 <div id="buffer" class="cipher-text">
     SYSTEM_READY... INITIALIZING_DECODE_SEQUENCE...
@@ -196,9 +158,18 @@
     let gameRunning = true;
 
     createFood();
+    drawInitialGame();
     main();
-  
+
     document.addEventListener("keydown", changeDirection);
+
+    function drawInitialGame() {
+        ctx.fillStyle = "#000";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        drawFood();
+        drawSnake();
+    }
 
     function main() {
         if (!gameRunning) return;
@@ -209,11 +180,10 @@
         }
 
         changingDirection = false;
-
         setTimeout(function onTick() {
             clearCanvas();
-            drawFood();
             advanceSnake();
+            drawFood();
             drawSnake();
             main();
         }, gameSpeed);
@@ -232,8 +202,8 @@
             ctx.shadowBlur = isHead ? 15 : 0;
             ctx.shadowColor = "#00ff41";
 
-            const size = isHead ? 10 : 8;
-            const offset = isHead ? 0 : 1;
+            const size = isHead ? 14 : 11;
+            const offset = isHead ? -2 : -1;
 
             ctx.fillRect(
                 part.x + offset,
@@ -258,6 +228,7 @@
             score++;
 
             const percent = Math.min(score * 5, 100);
+
             scoreElement.innerText =
                 DATA_RECOVERED: ${percent}%;
 
@@ -315,23 +286,21 @@
 
     function drawFood() {
         ctx.fillStyle = "#ffffff";
-        ctx.font = "10px monospace";
+        ctx.font = "bold 12px monospace";
         ctx.shadowBlur = 10;
         ctx.shadowColor = "#ffffff";
 
         ctx.fillText(
             foodChar,
-            foodX + 2,
-            foodY + 8
+            foodX + 1,
+            foodY + 10
         );
 
         ctx.shadowBlur = 0;
     }
 
     function updateBuffer() {
-        const chars =
-            "ABCDEF0123456789<>?/[]{}";
-
+        const chars = "ABCDEF0123456789<>?/[]{}";
         let str = "";
 
         for (let i = 0; i < 80; i++) {
@@ -354,35 +323,34 @@
         const key = event.key;
 
         if (
-            (key === "ArrowLeft" && dx !== 10) ||
-            (key === "a" && dx !== 10)
+            (key === "ArrowLeft"  key === "a"  key === "A") &&
+            dx !== 10
         ) {
             dx = -10;
             dy = 0;
             changingDirection = true;
         }
 
-        if (
-            (key === "ArrowUp" && dy !== 10) ||
-            (key === "w" && dy !== 10)
+        else if (
+            (key === "ArrowUp"  key === "w"  key === "W") &&
+            dy !== 10
         ) {
             dx = 0;
             dy = -10;
             changingDirection = true;
         }
-      
-        if (
-            (key === "ArrowRight" && dx !== -10) ||
-            (key === "d" && dx !== -10)
+
+        else if (
+            (key === "ArrowRight"  key === "d"  key === "D") &&
+            dx !== -10
         ) {
             dx = 10;
             dy = 0;
             changingDirection = true;
         }
-
-        if (
-            (key === "ArrowDown" && dy !== -10) ||
-            (key === "s" && dy !== -10)
+        else if (
+            (key === "ArrowDown"  key === "s"  key === "S") &&
+            dy !== -10
         ) {
             dx = 0;
             dy = 10;
@@ -399,48 +367,44 @@
             changingDirection = true;
         }
 
-        if (direction === "up" && dy !== 10) {
+        else if (direction === "up" && dy !== 10) {
             dx = 0;
             dy = -10;
             changingDirection = true;
         }
 
-        if (direction === "right" && dx !== -10) {
+        else if (direction === "right" && dx !== -10) {
             dx = 10;
             dy = 0;
             changingDirection = true;
         }
 
-        if (direction === "down" && dy !== -10) {
+        else if (direction === "down" && dy !== -10) {
             dx = 0;
             dy = 10;
             changingDirection = true;
         }
     }
 
-    document
-        .getElementById("up")
-        .addEventListener("pointerdown", () =>
-            setDirection("up")
-        );
+    document.getElementById("up").addEventListener(
+        "pointerdown",
+        () => setDirection("up")
+    );
 
-    document
-        .getElementById("left")
-        .addEventListener("pointerdown", () =>
-            setDirection("left")
-        );
+    document.getElementById("left").addEventListener(
+        "pointerdown",
+        () => setDirection("left")
+    );
 
-    document
-        .getElementById("down")
-        .addEventListener("pointerdown", () =>
-            setDirection("down")
-        );
+    document.getElementById("down").addEventListener(
+        "pointerdown",
+        () => setDirection("down")
+    );
 
-    document
-        .getElementById("right")
-        .addEventListener("pointerdown", () =>
-            setDirection("right")
-        );
+    document.getElementById("right").addEventListener(
+        "pointerdown",
+        () => setDirection("right")
+    );
 
     let touchStartX = 0;
     let touchStartY = 0;
@@ -482,9 +446,7 @@
     function gameOverEffect() {
         gameRunning = false;
 
-        ctx.fillStyle =
-            "rgba(255, 0, 0, 0.6)";
-
+        ctx.fillStyle = "rgba(255, 0, 0, 0.6)";
         ctx.fillRect(
             0,
             0,
@@ -504,4 +466,5 @@
     }
 </script>
 
-</body></html>
+</body>
+</html>
